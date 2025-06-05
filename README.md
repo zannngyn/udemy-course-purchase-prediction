@@ -61,8 +61,9 @@ Dự án sử dụng mô hình hồi quy logistic để dự đoán xem một ng
 git clone https://github.com/ten-cua-ban/udemy-course-purchase-prediction.git
 cd udemy-course-purchase-prediction
 pip install -r requirements.txt
+```
 
-📋 Phân công công việc & Hướng dẫn đóng góp
+## 📋 Phân công công việc & Hướng dẫn đóng góp
 Dự án tuân theo quy trình phân nhánh Git Flow đơn giản. Mọi thay đổi đều được phát triển trên các nhánh feature, sau đó được hợp nhất vào nhánh dev thông qua Pull Request.
 
 Để xem hướng dẫn chi tiết về quy trình làm việc với Git, vui lòng đọc file GIT_WORKFLOW.md.
