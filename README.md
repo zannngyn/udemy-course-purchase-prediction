@@ -78,6 +78,7 @@ Dưới đây là mô tả chi tiết công việc cho từng nhánh chức năn
 * **Công việc cụ thể:**
     * Viết code trong `src/data/load_data.py` để đọc file `Course_info.csv`.
     * Xử lý các giá trị bị thiếu (missing values).
+    * Chuẩn hoá dữ liệu (normalization)
     * **Gán nhãn (label):** Dựa vào các cột như `is_paid`, `price`, `avg_rating`, `num_subscribers` để tạo ra cột mục tiêu `will_purchase` (1 là mua, 0 là không mua).
     * Lưu DataFrame đã làm sạch vào thư mục `data/processed/`.
 
