@@ -192,3 +192,8 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# Dữ liệu và mô hình đã huấn luyện
+data/processed/
+models/
+*.pkl
