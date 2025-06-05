@@ -61,3 +61,17 @@ Dự án sử dụng mô hình hồi quy logistic để dự đoán xem một ng
 git clone https://github.com/ten-cua-ban/udemy-course-purchase-prediction.git
 cd udemy-course-purchase-prediction
 pip install -r requirements.txt
+
+📋 Phân công công việc & Hướng dẫn đóng góp
+Dự án tuân theo quy trình phân nhánh Git Flow đơn giản. Mọi thay đổi đều được phát triển trên các nhánh feature, sau đó được hợp nhất vào nhánh dev thông qua Pull Request.
+
+Để xem hướng dẫn chi tiết về quy trình làm việc với Git, vui lòng đọc file GIT_WORKFLOW.md.
+
+Dưới đây là bảng phân công công việc cụ thể trên từng nhánh:
+
+Tên Nhánh	Mục tiêu chính & Công việc cụ thể
+feature/data-cleaning	Chuẩn bị dữ liệu sạch: Đọc dữ liệu thô, xử lý giá trị thiếu, tạo cột nhãn will_purchase (1/0), và lưu kết quả vào data/processed/.
+feature/eda	Khám phá dữ liệu: Làm việc trong notebook, tính toán thống kê, vẽ biểu đồ phân phối và tương quan để tìm hiểu sâu về dữ liệu. Lưu biểu đồ vào reports/figures/.
+feature/model-training	Xây dựng và huấn luyện mô hình: Viết script tạo đặc trưng (chuẩn hóa, mã hóa), huấn luyện mô hình Hồi quy Logistic, đánh giá hiệu năng (accuracy, F1-score) và lưu model đã huấn luyện vào models/.
+feature/ui-form	Tạo giao diện người dùng: Dùng Tkinter thiết kế form nhập liệu, viết logic cho nút "Dự đoán" để tương tác với mô hình đã lưu.
+feature/utils	Viết các hàm tái sử dụng: Xây dựng các hàm tiện ích chung (ví dụ: hàm lưu file, hàm vẽ biểu đồ) để tránh lặp code
