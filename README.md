@@ -67,7 +67,7 @@ pip install -r requirements.txt
 
 Dự án tuân theo quy trình phân nhánh **Git Flow** đơn giản. Mọi thay đổi đều được phát triển trên các **nhánh `feature`**, sau đó được hợp nhất vào nhánh `dev` thông qua **Pull Request**.
 
-> Để xem hướng dẫn chi tiết về quy trình làm việc với Git, vui lòng đọc file **[GIT_WORKFLOW.md](./GIT_WORKFLOW.md)**.
+> Để xem hướng dẫn chi tiết về quy trình làm việc với Git, vui lòng đọc file **[GIT_WORKFLOW.md](./git_workflow.md)**.
 
 Dưới đây là mô tả chi tiết công việc cho từng nhánh chức năng:
 
