@@ -64,15 +64,58 @@ pip install -r requirements.txt
 ```
 
 ## 📋 Phân công công việc & Hướng dẫn đóng góp
-Dự án tuân theo quy trình phân nhánh Git Flow đơn giản. Mọi thay đổi đều được phát triển trên các nhánh feature, sau đó được hợp nhất vào nhánh dev thông qua Pull Request.
 
-Để xem hướng dẫn chi tiết về quy trình làm việc với Git, vui lòng đọc file GIT_WORKFLOW.md.
+Dự án tuân theo quy trình phân nhánh **Git Flow** đơn giản. Mọi thay đổi đều được phát triển trên các **nhánh `feature`**, sau đó được hợp nhất vào nhánh `dev` thông qua **Pull Request**.
 
-Dưới đây là bảng phân công công việc cụ thể trên từng nhánh:
+> Để xem hướng dẫn chi tiết về quy trình làm việc với Git, vui lòng đọc file **[GIT_WORKFLOW.md](./GIT_WORKFLOW.md)**.
 
-Tên Nhánh	Mục tiêu chính & Công việc cụ thể
-feature/data-cleaning	Chuẩn bị dữ liệu sạch: Đọc dữ liệu thô, xử lý giá trị thiếu, tạo cột nhãn will_purchase (1/0), và lưu kết quả vào data/processed/.
-feature/eda	Khám phá dữ liệu: Làm việc trong notebook, tính toán thống kê, vẽ biểu đồ phân phối và tương quan để tìm hiểu sâu về dữ liệu. Lưu biểu đồ vào reports/figures/.
-feature/model-training	Xây dựng và huấn luyện mô hình: Viết script tạo đặc trưng (chuẩn hóa, mã hóa), huấn luyện mô hình Hồi quy Logistic, đánh giá hiệu năng (accuracy, F1-score) và lưu model đã huấn luyện vào models/.
-feature/ui-form	Tạo giao diện người dùng: Dùng Tkinter thiết kế form nhập liệu, viết logic cho nút "Dự đoán" để tương tác với mô hình đã lưu.
-feature/utils	Viết các hàm tái sử dụng: Xây dựng các hàm tiện ích chung (ví dụ: hàm lưu file, hàm vẽ biểu đồ) để tránh lặp code
+Dưới đây là mô tả chi tiết công việc cho từng nhánh chức năng:
+
+---
+
+### nhánh `feature/data-cleaning`
+* **Mục tiêu:** Chuẩn bị dữ liệu sạch để phân tích và huấn luyện.
+* **Công việc cụ thể:**
+    * Viết code trong `src/data/load_data.py` để đọc file `Course_info.csv`.
+    * Xử lý các giá trị bị thiếu (missing values).
+    * **Gán nhãn (label):** Dựa vào các cột như `is_paid`, `price`, `avg_rating`, `num_subscribers` để tạo ra cột mục tiêu `will_purchase` (1 là mua, 0 là không mua).
+    * Lưu DataFrame đã làm sạch vào thư mục `data/processed/`.
+
+---
+
+### nhánh `feature/eda`
+* **Mục tiêu:** Khám phá và tìm hiểu sâu hơn về dữ liệu.
+* **Công việc cụ thể:**
+    * Làm việc chính trong file `notebooks/eda.ipynb`.
+    * Tính toán các thống kê mô tả (giá trung bình, số lượng bài giảng, v.v.).
+    * **Vẽ biểu đồ:** Dùng Matplotlib/Seaborn để vẽ biểu đồ phân phối, biểu đồ tương quan để tìm ra các yếu tố ảnh hưởng đến quyết định mua hàng.
+    * Lưu các biểu đồ quan trọng vào thư mục `reports/figures/`.
+
+---
+
+### nhánh `feature/model-training`
+* **Mục tiêu:** Xây dựng, huấn luyện và đánh giá mô hình dự đoán.
+* **Công việc cụ thể:**
+    * **Tạo đặc trưng:** Viết code trong `src/features/build_features.py` để chuẩn hóa (scale) các cột số và mã hóa (encode) các cột chữ.
+    * **Huấn luyện:** Viết code trong `src/models/train_model.py` để huấn luyện mô hình Hồi quy Logistic.
+    * **Đánh giá:** Viết code trong `src/models/evaluate_model.py` để tính các chỉ số như Accuracy, F1-score và vẽ ma trận nhầm lẫn (Confusion Matrix).
+    * Lưu mô hình đã huấn luyện vào thư mục `models/` (ví dụ: `logistic_model.pkl`).
+
+---
+
+### nhánh `feature/ui-form`
+* **Mục tiêu:** Tạo giao diện người dùng để tương tác với mô hình.
+* **Công việc cụ thể:**
+    * Sử dụng **Tkinter** để thiết kế giao diện (form) cho phép người dùng nhập thông tin của một khóa học.
+    * Viết logic cho nút "Dự đoán": Lấy dữ liệu người dùng nhập, xử lý nó, tải mô hình từ file `.pkl` và hiển thị kết quả dự đoán ra màn hình.
+    * Tạo một file riêng ở thư mục gốc, ví dụ: `app_ui.py`.
+
+---
+
+### nhánh `feature/utils`
+* **Mục tiêu:** Viết các hàm có thể tái sử dụng cho toàn bộ dự án.
+* **Công việc cụ thể:**
+    * Tạo file `src/utils/helpers.py`.
+    * Viết các hàm tiện ích chung, ví dụ: một hàm để lưu biểu đồ, một hàm để tải cấu hình, hoặc thiết lập logging.
+
+---
