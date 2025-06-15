@@ -194,6 +194,4 @@ cython_debug/
 .cursorindexingignore
 
 # Dữ liệu và mô hình đã huấn luyện
-
-models/
-*.pkl
+/models/
