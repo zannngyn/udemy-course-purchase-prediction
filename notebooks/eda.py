@@ -1,32 +1,19 @@
-#!/usr/bin/env python
-# coding: utf-8
+import findspark
+findspark.init()
 
-# In[ ]:
+from pyspark.sql.types import DoubleType, IntegerType
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+from pyspark.sql.functions import col, when
+from tkinter import filedialog, messagebox
+import tkinter as tk
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+import os
 
-# def install_pyspark():
-#     get_ipython().system('pip install pyspark')
-#     get_ipython().system('pip install findspark')
+spark = SparkSession.builder.appName("Phân tích mô tả").getOrCreate()
 
-
-# In[ ]:
-
-def lib_import():
-    import findspark
-    findspark.init()
-
-    from pyspark.sql.types import DoubleType, IntegerType
-    from pyspark.sql import SparkSession
-    from pyspark.sql import functions as F
-    from pyspark.sql.functions import col, when
-
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    import pandas as pd
-    import os
-
-    spark = SparkSession.builder.appName("Phân tích mô tả").getOrCreate()
-
-    return spark, pd, plt, sns, F, col, when
 
 
 # In[ ]:
@@ -34,7 +21,7 @@ def lib_import():
 def resolve_csv_path():
     # cwd là đường dẫn hiện tại nơi chương trình Python đang chạy
     cwd = os.getcwd()
-    csv_path = os.path.abspath(os.path.join(cwd, "../data/processed/data_cleaned.csv"))
+    csv_path = os.path.abspath(os.path.join(cwd, "data/processed/data_cleaned.csv"))
     print("Resolved CSV path:", csv_path)
 
 
@@ -44,11 +31,8 @@ def load_data():
     # In ra thư mục hiện tại để kiểm tra
     print("Current working directory:", os.getcwd())
 
-    # Nếu cần: chuyển về thư mục gốc của project (nếu đang mở notebook trong subfolder `notebooks/`)
-    # os.chdir("/Users/zan/Desktop/udemy-course-purchase-prediction")
-
-    # Lấy đường dẫn tuyệt đối đến file CSV
-    csv_path = "../data/processed/data_cleaned.csv"
+    # Lấy đường dẫn đến file CSV
+    csv_path = "data/processed/data_cleaned.csv"
     print("CSV path:", csv_path)
 
     # Khởi tạo Spark session
@@ -58,6 +42,7 @@ def load_data():
     df = spark.read.option("header", True).csv(csv_path, inferSchema=True)
     df.show(5)
     df.printSchema()
+    return df
 
 
 # In[ ]:
@@ -90,61 +75,70 @@ def cast_numeric_columns(df):
     # df.printSchema()
     return df
 
-
-# In[ ]:
-
-def filter_numeric_columns(df):
-    # Lấy danh sách các cột có kiểu số sau khi ép kiểu
-    numeric_cols = [f.name for f in df.schema.fields if f.dataType.simpleString() in ("double", "int", "float", "long")]
-    print("Các cột số:", numeric_cols)
-    return numeric_cols
-
-
-# In[ ]:
-
 def compute_mode(df, col):
     # Hàm tính giá trị mode (giá trị xuất hiện nhiều nhất) của một cột
 
     mode_row = df.groupBy(col).count().orderBy(F.desc("count")).first()
     return mode_row[col] if mode_row else None
 
+def pre_eda():
+    resolve_csv_path()
+    raw_data= load_data()
+    df = cast_numeric_columns(raw_data)
+    return df
 
-# In[ ]:
+
 
 def describe_numeric_columns(df):
-    # import os
     os.makedirs("reports/numeric_cols", exist_ok=True)
-    # Danh sách các cột số đã biết
-    known_numerical_cols = [
-        "price", "num_subscribers", "avg_rating", "num_reviews",
-        "num_comments", "num_lectures", "content_length_min", "most_common_price"
-    ]
 
-    # Giữ lại các cột tồn tại trong DataFrame
+    known_numerical_cols = [f.name for f in df.schema.fields
+                            if f.dataType.simpleString() in ("double", "int", "float", "long")]
+
     numerical_cols = [c for c in known_numerical_cols if c in df.columns]
 
-    # Ép kiểu an toàn: chỉ ép nếu là chuỗi dạng số, còn lại cho None
     for col_name in numerical_cols:
-        df = df.withColumn(
-            col_name,
+        df = df.withColumn(col_name,
             when(F.col(col_name).rlike(r"^-?\d+(\.\d+)?$"), F.col(col_name).cast("double")).otherwise(None)
         )
 
-    print("Đã ép kiểu an toàn cho các cột số:", numerical_cols)
+    print(" Đã ép kiểu an toàn cho các cột số:", numerical_cols)
 
-    # Thống kê mô tả
+    summary_results = []
+
     for col_name in numerical_cols:
-        print(f"\nThống kê mô tả cho cột: {col_name}")
-        df.select(col_name).summary("count", "mean", "stddev", "min", "max").show()
-    # Xuất thống kê mô tả cột số ra csv
-    summary_df = df.select(col_name).summary("count", "mean", "stddev", "min", "max")
-    summary_df.coalesce(1).write.csv(f"reports/numeric_cols/{col_name}_summary.csv", header=True)
+        print(f"\n Thống kê mô tả cho cột: {col_name}")
+        summary_df = df.select(col_name).summary("count", "mean", "stddev", "min", "max")
+        pdf = summary_df.toPandas()
+        pdf.insert(0, "column", col_name)
+        summary_results.append(pdf)
+
+    final_summary = pd.concat(summary_results, ignore_index=True)
+
+    # GUI: chọn nơi lưu
+    root = tk.Tk()
+    root.withdraw()
+
+    save_path = filedialog.asksaveasfilename(
+        title="Lưu thống kê mô tả các cột số",
+        defaultextension=".csv",
+        filetypes=[("CSV files", "*.csv")],
+        initialfile="numeric_summary.csv",
+        initialdir="reports/numeric_cols"
+    )
+
+    if save_path:
+        final_summary.to_csv(save_path, index=False)
+        print(f" Đã lưu thống kê mô tả các cột số tại: {save_path}")
+        messagebox.showinfo("Thành công", f"Đã lưu file tại:\n{save_path}")
+    else:
+        print(" Người dùng đã hủy lưu file.")
 
 
 
-def describe_extended(df, output_path="stats_summary.csv"):
-    # import os
+def describe_extended(df):
     os.makedirs("reports/extended_describe_numeric_cols", exist_ok=True)
+
     numerical_cols = [
         "price", "num_subscribers", "avg_rating", "num_reviews",
         "num_comments", "num_lectures", "content_length_min", "most_common_price"
@@ -154,10 +148,10 @@ def describe_extended(df, output_path="stats_summary.csv"):
     results = []
 
     for col in available_cols:
-        print(f"Tính thống kê cho: {col}")
+        print(f"📊 Đang tính thống kê cho: {col}")
         approx = df.approxQuantile(col, [0.25, 0.5, 0.75], 0.01)
         q1, median, q3 = approx if len(approx) == 3 else (None, None, None)
-        iqr = q3 - q1 if q3 and q1 else None
+        iqr = q3 - q1 if q3 is not None and q1 is not None else None
         mode = compute_mode(df, col)
 
         agg = df.agg(
@@ -184,12 +178,26 @@ def describe_extended(df, output_path="stats_summary.csv"):
             "mode": mode
         })
 
-    # Xuất ra CSV
-    pd.DataFrame(results).to_csv(output_path, index=False)
-    print(f"✅ Đã xuất thống kê mô tả mở rộng ra: {output_path}")
-#  gọi hàm chú ý đường dẫn
-# describe_extended(df, output_path="/reports/extended_describe_numeric_cols/summary_stats.csv")
-# In[ ]:
+    result_df = pd.DataFrame(results)
+
+    root = tk.Tk()
+    root.withdraw()
+
+    save_path = filedialog.asksaveasfilename(
+        title="Lưu kết quả thống kê mô tả mở rộng",
+        defaultextension=".csv",
+filetypes=[("CSV files", "*.csv")],
+        initialfile="summary_stats.csv",
+        initialdir="reports/extended_describe_numeric_cols"
+    )
+
+    if save_path:
+        result_df.to_csv(save_path, index=False)
+        print(f" Đã lưu thống kê mô tả mở rộng tại: {save_path}")
+        messagebox.showinfo("Thành công", f"Đã lưu file tại:\n{save_path}")
+    else:
+        print(" Người dùng đã hủy lưu file.")
+
 
 
 # Liệu mức giá cao/thấp ảnh hưởng đến quyết định mua
@@ -400,4 +408,3 @@ def price_effect_on_num_lectures(df):
 
     plt.tight_layout()
     plt.show()
-
