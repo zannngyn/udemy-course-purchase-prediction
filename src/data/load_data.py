@@ -83,7 +83,6 @@ for file_name in os.listdir(output_dir):
     if file_name.startswith("part-") and file_name.endswith(".csv"):
         # Sử dụng Path để tạo đường dẫn nguồn một cách an toàn
         source_file = output_dir / file_name
-        # shutil.move hoạt động tốt với cả chuỗi và đối tượng Path
         shutil.move(source_file, final_output_path)
         break
 
