@@ -5,11 +5,15 @@ from src.models import evaluate_model as em
 from pyspark.sql import SparkSession
 from src.features import  build_features as bf
 import findspark
+import os
 findspark.init()
 
 
 def train_all_models():
     # sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    if os.path.exists("models"):
+        print("Thư mục 'models' đã tồn tại. Bỏ qua bước huấn luyện.")
+        return
     # Tạo SparkSession
     spark = SparkSession.builder \
         .appName("LogisticRegressionProject") \

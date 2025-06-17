@@ -1,0 +1,1 @@
+{"class":"org.apache.spark.ml.feature.OneHotEncoderModel","timestamp":1750192600117,"sparkVersion":"3.5.5","uid":"OneHotEncoder_d1df929c55bd","paramMap":{"outputCol":"price_vec","inputCol":"price_idx"},"defaultParamMap":{"outputCol":"OneHotEncoder_d1df929c55bd__output","dropLast":true,"handleInvalid":"error"}}

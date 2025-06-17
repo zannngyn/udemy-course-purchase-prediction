@@ -15,7 +15,7 @@ def open_mota_window(parent):
     btn_frame.pack()
 
     btn1 = tk.Button(btn_frame, text="Tạo báo cáo cơ bản về phân tích các cột số", font=("Arial", 12),
-                     width=20, height=4, wraplength=150, command=ne.describe_numeric_columns(df))
+                     width=20, height=4, wraplength=150, command=lambda: ne.describe_numeric_columns(df))
     btn1.grid(row=0, column=0, padx=10)
 
     btn2 = tk.Button(btn_frame, text="Tạo báo cáo nầng cao về các cột phi số", font=("Arial", 12),

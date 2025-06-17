@@ -1,8 +1,14 @@
 import tkinter as tk
 from tkinter import messagebox
-from src.models.create_models import train_all_models
+import os
+import numpy as np
+from pyspark.ml import PipelineModel  # Dùng để load mô hình đã huấn luyện bằng PySpark
+from pyspark.sql import SparkSession
+from pyspark.sql import Row
 
+from src.models.create_models import train_all_models  # Hàm huấn luyện tất cả các mô hình nếu cần
 
+# Hàm kiểm tra đầu vào người dùng theo quy tắc nhập liệu
 def validate_entries(entries, rules):
     for key, entry in entries.items():
         val = entry.get().strip()
@@ -19,7 +25,45 @@ def validate_entries(entries, rules):
                 return False
     return True
 
-def create_form_window(parent, title_text, fields, validation_rules):
+# Hàm thực hiện dự đoán và hiển thị kết quả
+def predict_and_show_result(model_index, fields, raw_values):
+    try:
+        # Tạo SparkSession để xử lý với mô hình PySpark
+        spark = SparkSession.builder.appName("PredictSingleSample").getOrCreate()
+
+        # Đường dẫn đến thư mục chứa model đã huấn luyện
+        model_path = os.path.join("models", f"model{model_index}")
+        model = PipelineModel.load(model_path)  # Load model PySpark đã lưu
+
+        # Ghép cặp field: value để tạo Row cho Spark DataFrame
+        data = {field: try_parse(value) for field, value in zip(fields, raw_values)}
+        df_input = spark.createDataFrame([Row(**data)])
+
+        # Dự đoán bằng mô hình
+        prediction = model.transform(df_input)
+        result = prediction.select("probability", "prediction").first()
+
+        prob = result["probability"][1]  # Xác suất dự đoán label=1 (mua)
+        decision = "Mua khoá học" if prob >= 0.5 else "Không mua"
+
+        messagebox.showinfo("Kết quả dự đoán", f"Quyết định: {decision}")
+        spark.stop()
+
+    except Exception as e:
+        messagebox.showerror("Lỗi", f"Không thể dự đoán: {e}")
+
+# Hàm ép kiểu dữ liệu từ string sang float/int nếu có thể
+def try_parse(value):
+    try:
+        if '.' in value:
+            return float(value)
+        else:
+            return int(value)
+    except:
+        return value.strip()
+
+# Tạo cửa sổ form nhập liệu tương ứng với mỗi mô hình
+def create_form_window(parent, title_text, fields, validation_rules, model_index):
     form = tk.Toplevel(parent)
     form.title(title_text)
     form.geometry("400x500")
@@ -37,16 +81,24 @@ def create_form_window(parent, title_text, fields, validation_rules):
         entry.pack(fill='x', padx=10, pady=5)
         entries[field] = entry
 
+    # Khi nhấn nút "Dự đoán"
     def on_submit():
         if validate_entries(entries, validation_rules):
-            messagebox.showinfo("Thành công", "Dữ liệu hợp lệ và đã được gửi!")
-            form.destroy()
+            try:
+                raw_values = [entries[f].get().strip() for f in fields]
+                predict_and_show_result(model_index, fields, raw_values)
+                form.destroy()
+            except Exception as e:
+                messagebox.showerror("Lỗi", f"Lỗi xử lý dữ liệu: {e}")
 
-    submit_btn = tk.Button(form, text="Gửi", command=on_submit)
+    submit_btn = tk.Button(form, text="Dự đoán", command=on_submit)
     submit_btn.pack(pady=20)
 
+# Cửa sổ chọn mô hình dự đoán (mở từ cửa sổ chính)
 def open_dudoan_window(parent):
+    # Nếu chưa huấn luyện mô hình, sẽ gọi train
     train_all_models()
+
     window = tk.Toplevel(parent)
     window.title("Phân tích dự đoán")
     window.geometry("700x600")
@@ -56,54 +108,56 @@ def open_dudoan_window(parent):
                      bg="#d0edf5", font=("Arial", 14, "bold"))
     title.pack(pady=(20, 5))
 
-    subtitle = tk.Label(window, text="Các mẫu đã huấn luyện sẵn (dưới đây là các đầu vào)",
+    subtitle = tk.Label(window, text="Chọn 1 mô hình để nhập dữ liệu đầu vào",
                         fg="darkred", bg="#d0edf5", font=("Arial", 11))
     subtitle.pack(pady=(0, 20))
 
+    # Cấu hình từng mô hình: mô tả, danh sách trường nhập, và điều kiện kiểm tra
     input_options = [
-        ("Mẫu 1: Danh mục, Giá, Tổng số bài giảng, Điểm dánh giá TB", [
-            "Danh mục khoá học", "Giá", "Tổng số bài giảng", "Điểm đánh giá TB của khoá"
+        ("Mẫu 1: category, price, num_lectures, avg_rating", [
+            "category", "price", "num_lectures", "avg_rating"
         ], {
-            "Giá": lambda x: float(x) >= 0,
-            "Tổng số bài giảng": lambda x: int(x) > 0,
-            "Điểm đánh giá TB của khoá": lambda x: 0 <= float(x) <= 5
+            "price": lambda x: float(x) >= 0,
+            "num_lectures": lambda x: int(x) > 0,
+            "avg_rating": lambda x: 0 <= float(x) <= 5
         }),
 
-        ("Mẫu 2: Danh mục, Số người đăng ký, Số người đánh giá, Số bình luận, Điểm đánh giá trung bình", [
-            "Danh mục khoá học", "Số người đăng ký", "Số người đánh giá", "Tổng số bình luận", "Điểm đánh giá trung bình"
+        ("Mẫu 2: category, num_subscribers, num_reviews, num_comments, avg_rating", [
+            "category", "num_subscribers", "num_reviews", "num_comments", "avg_rating"
         ], {
-            "Số người đăng ký": lambda x: int(x) >= 0,
-            "Số người đánh giá": lambda x: int(x) >= 0,
-            "Tổng số bình luận": lambda x: int(x) >= 0,
-            "Điểm đánh giá trung bình": lambda x: 0 <= float(x) <= 5
+            "num_subscribers": lambda x: int(x) >= 0,
+            "num_reviews": lambda x: int(x) >= 0,
+            "num_comments": lambda x: int(x) >= 0,
+            "avg_rating": lambda x: 0 <= float(x) <= 5
         }),
 
-        ("Mẫu 3: Danh mục, chủ đề, ngôn ngữ sở dụng, giá", [
-            "Danh mục khoá học", "Chủ đề khoá học", "Ngôn ngữ sử dụng", "Giá bán"
+        ("Mẫu 3: category, topic, language, price", [
+            "category", "topic", "language", "price"
         ], {
-            "Giá bán": lambda x: float(x) >= 0
+            "price": lambda x: float(x) >= 0
         }),
 
-        ("Mẫu 4: Danh mục, chủ đề nhỏ, ngôn ngữ, giá bán", [
-            "Danh mục khoá học", "Chủ đề nhỏ của khoá học", "Ngôn ngữ sử dụng", "Giá bán"
+        ("Mẫu 4: category, num_lectures, content_length_min, avg_rating", [
+            "category", "num_lectures", "content_length_min", "avg_rating"
         ], {
-            "Giá bán": lambda x: float(x) >= 0
+            "num_lectures": lambda x: int(x) > 0,
+            "content_length_min": lambda x: float(x) > 0,
+            "avg_rating": lambda x: 0 <= float(x) <= 5
         }),
 
-        ("Mẫu 5", [
-            "Phân loại khoá học", "Tổng số bài giảng", "Thời lượng khoá học", "Số người đăng ký", "Số người đánh giá", "Số bình luận"
-        ], {
-            "Tổng số bài giảng": lambda x: int(x) > 0,
-            "Thời lượng khoá học": lambda x: float(x) > 0,
-            "Số người đăng ký": lambda x: int(x) >= 0,
-            "Số người đánh giá": lambda x: int(x) >= 0,
-            "Số bình luận": lambda x: int(x) >= 0
+        ("Mẫu 5: price, subcategory, content_length_min", [
+            "price", "subcategory", "content_length_min"
+        ], {"price": lambda x: float(x) >= 0,
+            "content_length_min": lambda x: float(x) > 0
         }),
 
-        ("Tự chọn dữ liệu", [
-            "Tập dữ liệu bạn chọn (đường dẫn)"
+        ("Mẫu 6: price, num_subscribers, avg_rating, category", [
+            "price", "num_subscribers", "avg_rating", "category"
         ], {
-        }),
+            "price": lambda x: float(x) >= 0,
+            "num_subscribers": lambda x: int(x) >= 0,
+            "avg_rating": lambda x: 0 <= float(x) <= 5
+        })
     ]
 
     btn_frame = tk.Frame(window, bg="#d0edf5")
@@ -112,11 +166,11 @@ def open_dudoan_window(parent):
     for i, (title_text, fields, rules) in enumerate(input_options):
         btn = tk.Button(
             btn_frame, text=title_text, font=("Arial", 10), width=30, height=4, wraplength=170,
-            command=lambda t=title_text, f=fields, r=rules: create_form_window(window, t, f, r)
+            command=lambda t=title_text, f=fields, r=rules, idx=i+1: create_form_window(window, t, f, r, idx)
         )
         btn.grid(row=i//2, column=i%2, padx=10, pady=10)
 
-# Để chạy thử
+# Cửa sổ chính khởi chạy chương trình
 if __name__ == "__main__":
     root = tk.Tk()
     root.title("Main Window")
