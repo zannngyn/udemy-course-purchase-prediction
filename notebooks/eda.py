@@ -48,7 +48,7 @@ def load_data():
     # os.chdir("/Users/zan/Desktop/udemy-course-purchase-prediction")
 
     # Lấy đường dẫn tuyệt đối đến file CSV
-    csv_path = "/Users/zan/Desktop/udemy-course-purchase-prediction/data/processed/data_cleaned.csv"
+    csv_path = "../data/processed/data_cleaned.csv"
     print("CSV path:", csv_path)
 
     # Khởi tạo Spark session
