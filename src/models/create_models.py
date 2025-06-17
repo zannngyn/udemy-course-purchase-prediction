@@ -9,7 +9,7 @@ findspark.init()
 
 
 def train_all_models():
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    # sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
     # Tạo SparkSession
     spark = SparkSession.builder \
         .appName("LogisticRegressionProject") \
@@ -46,12 +46,12 @@ def train_all_models():
     config3 = [
         (
             ["price", "subcategory", "content_length_min"],
-            "model/model5",
+            "models/model5",
             "Mô hình 5: Dự đoán theo price, subcategory, content_length_min"
         ),
         (
             ["price", "num_subscribers", "avg_rating", "category"],
-            "model/model6",
+            "models/model6",
             "Mô hình 6: Dự đoán theo price, num_subscribers, avg_rating,  category "
         )
     ]

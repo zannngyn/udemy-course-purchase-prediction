@@ -20,7 +20,7 @@ spark = SparkSession.builder.appName("Phân tích mô tả").getOrCreate()
 def resolve_csv_path():
     # cwd là đường dẫn hiện tại nơi chương trình Python đang chạy
     cwd = os.getcwd()
-    csv_path = os.path.abspath(os.path.join(cwd, "../data/processed/data_cleaned.csv"))
+    csv_path = os.path.abspath(os.path.join(cwd, "data/processed/data_cleaned.csv"))
     print("Resolved CSV path:", csv_path)
 
 
@@ -31,7 +31,7 @@ def load_data():
     print("Current working directory:", os.getcwd())
 
     # Lấy đường dẫn tuyệt đối đến file CSV
-    csv_path = "../data/processed/data_cleaned.csv"
+    csv_path = "data/processed/data_cleaned.csv"
     print("CSV path:", csv_path)
 
     # Khởi tạo Spark session
@@ -112,7 +112,7 @@ def describe_numeric_columns(df):
         df.select(col_name).summary("count", "mean", "stddev", "min", "max").show()
     # Xuất thống kê mô tả cột số ra csv
     summary_df = df.select(col_name).summary("count", "mean", "stddev", "min", "max")
-    summary_df.coalesce(1).write.csv(f"reports/numeric_cols/{col_name}_summary.csv", header=True)
+    summary_df.coalesce(1).write.mode("overwrite").csv(f"reports/numeric_cols/{col_name}_summary.csv", header=True)
 
 
 

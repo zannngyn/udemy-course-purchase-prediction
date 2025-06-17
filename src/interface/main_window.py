@@ -1,6 +1,6 @@
 import tkinter as tk
-# from src.interface.screen_mota import open_mota_window
-# from src.interface.screen_dudoan import open_dudoan_window
+from src.interface.screen_mota import open_mota_window
+from src.interface.screen_dudoan import open_dudoan_window
 import notebooks.eda as ne
 
 def main_window():
@@ -21,11 +21,11 @@ def main_window():
 
     # Nút
     btn1 = tk.Button(root, text="Phân tích mô tả", font=("Arial", 14, "bold"),
-                     bg="#c9c1c1", width=20, height=3)
+                     bg="#c9c1c1", width=20, height=3, command=lambda:open_mota_window(root) )
     btn1.pack(pady=20)
 
     btn2 = tk.Button(root, text="Phân tích dự đoán", font=("Arial", 14, "bold"),
-                     bg="#c9c1c1", width=20, height=3)
+                     bg="#c9c1c1", width=20, height=3, command=lambda:open_dudoan_window(root))
     btn2.pack()
 
     root.mainloop()

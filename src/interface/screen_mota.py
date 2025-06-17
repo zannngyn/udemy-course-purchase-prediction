@@ -28,17 +28,17 @@ def open_mota_window(parent):
     label.pack(pady=(30, 10))
 
     questions = [
-        ("Liệu mức giá cao/thấp ảnh hưởng đến quyết định mua", lambda x=None: ne.price_effect_on_result()),
+        ("Liệu mức giá cao/thấp ảnh hưởng đến quyết định mua", lambda: ne.price_effect_on_result(df)),
         ("Khoá học có nhiều người đăng ký thì có tỷ lệ mua cao hơn không?",
-         lambda x=None: ne.num_subscribers_effect_on_result(x)),
-        ("Rating ảnh hưởng đến tỷ lệ mua khoá học như thế nào?", lambda x=None: ne.avg_rating_effect_on_result(x)),
+         lambda: ne.num_subscribers_effect_on_result(df)),
+        ("Rating ảnh hưởng đến tỷ lệ mua khoá học như thế nào?", lambda: ne.avg_rating_effect_on_result(df)),
         ("Độ dài khoá học ảnh hưởng đến tỷ lệ mua khoá học như thế nào?",
-         lambda x=None: ne.content_length_min_effect_on_result(x)),
-        ("Có phải review càng nhiều thì rating càng cao?", lambda x=None: ne.num_reviews_effect_on_avg_rating(x)),
+         lambda: ne.content_length_min_effect_on_result(df)),
+        ("Có phải review càng nhiều thì rating càng cao?", lambda: ne.num_reviews_effect_on_avg_rating(df)),
         ("Phân tích ảnh hưởng của số lượng review đến quyết định mua",
-         lambda x=None: ne.num_reviews_effect_on_result(x)),
+         lambda: ne.num_reviews_effect_on_result(df)),
         ("Mối tương quan nào giữa giá của khoá học và số lượng bài giảng",
-         lambda x=None: ne.price_effect_on_num_lectures(x)),
+         lambda: ne.price_effect_on_num_lectures(df)),
     ]
 
     q_frame = tk.Frame(window, bg="#e5ecbd")
