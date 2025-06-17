@@ -4,7 +4,7 @@ from pathlib import Path
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, mean, stddev, when, count, desc, lit, first
 from pyspark.sql.window import Window
-
+from pyspark.sql.functions import sum as _sum
 # Khởi tạo Spark session
 spark = SparkSession.builder \
     .appName("Pre-processing") \
@@ -16,6 +16,19 @@ input_file = base_raw_path / "Course_info.csv"
 
 # Đọc file CSV vào DataFrame
 df = spark.read.option("header", True).option("inferSchema", True).csv(str(input_file))
+
+# Đếm số giá trị null trên từng cột
+null_counts = df.select([
+    _sum(when(col(c).isNull(), 1).otherwise(0)).alias(c)
+    for c in df.columns
+])
+
+# Chuyển về dạng pandas để transpose
+null_df = null_counts.toPandas().transpose().reset_index()
+null_df.columns = ['column_name', 'missing_count']
+
+# In ra để xem
+print(null_df)
 
 # Xử lí missing values bằng cách loại bỏ các dòng có giá trị null
 df_clean = df.dropna()
@@ -70,7 +83,6 @@ for file_name in os.listdir(output_dir):
     if file_name.startswith("part-") and file_name.endswith(".csv"):
         # Sử dụng Path để tạo đường dẫn nguồn một cách an toàn
         source_file = output_dir / file_name
-        # shutil.move hoạt động tốt với cả chuỗi và đối tượng Path
         shutil.move(source_file, final_output_path)
         break
 
