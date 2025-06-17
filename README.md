@@ -29,7 +29,7 @@ Dự án sử dụng mô hình hồi quy logistic để dự đoán xem một ng
 | **Phân tích dữ liệu & mô hình** | Pandas, NumPy, Scikit-learn, Matplotlib, Seaborn |
 | **Giao diện người dùng (UI)** | Tkinter |
 | **Lưu mô hình** | `joblib` hoặc `pickle` |
-| **Môi trường phát triển** | Jupyter Notebook (EDA & mô hình), PyCharm (Tkinter & module) |
+| **Môi trường phát triển** | Jupyter Notebook (EDA), PyCharm (Tkinter & module) |
 | **Quản lý thư viện** | `requirements.txt` |
 | **Hệ điều hành** | Đa nền tảng (macOS, Windows, Linux) |
 
