@@ -111,12 +111,3 @@ Dưới đây là mô tả chi tiết công việc cho từng nhánh chức năn
     * Viết logic cho nút "Dự đoán": Lấy dữ liệu người dùng nhập, xử lý nó, tải mô hình từ file `.pkl` và hiển thị kết quả dự đoán ra màn hình.
     * Tạo một file riêng ở thư mục gốc, ví dụ: `app_ui.py`.
 
----
-
-### nhánh `feature/utils`
-* **Mục tiêu:** Viết các hàm có thể tái sử dụng cho toàn bộ dự án.
-* **Công việc cụ thể:**
-    * Tạo file `src/utils/helpers.py`.
-    * Viết các hàm tiện ích chung, ví dụ: một hàm để lưu biểu đồ, một hàm để tải cấu hình, hoặc thiết lập logging.
-
----
