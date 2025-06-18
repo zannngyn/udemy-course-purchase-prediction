@@ -18,7 +18,7 @@ def open_mota_window(parent):
                      width=20, height=4, wraplength=150, command=lambda: ne.describe_numeric_columns(df))
     btn1.grid(row=0, column=0, padx=10)
 
-    btn2 = tk.Button(btn_frame, text="Tạo báo cáo nầng cao về các cột phi số", font=("Arial", 12),
+    btn2 = tk.Button(btn_frame, text="Tạo báo cáo nâng cao về các cột dữ liệu số", font=("Arial", 12),
                      width=20, height=4, wraplength=150, command=lambda: ne.describe_extended(df))
     btn2.grid(row=0, column=1, padx=10)
 
