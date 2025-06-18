@@ -24,7 +24,7 @@ Dự án sử dụng mô hình hồi quy logistic để dự đoán xem một ng
 | Thành phần | Công nghệ |
 |------------|-----------|
 | **Ngôn ngữ lập trình** | Python 3.9+ |
-| **Phân tích dữ liệu & mô hình** | Pandas, NumPy, Scikit-learn, Matplotlib, Seaborn |
+| **Phân tích dữ liệu & mô hình** | Pandas, NumPy, Scikit-learn, Matplotlib, Seaborn, Spark |
 | **Giao diện người dùng (UI)** | Tkinter |
 | **Lưu mô hình** | `joblib` hoặc `pickle` |
 | **Môi trường phát triển** | Jupyter Notebook (EDA), PyCharm (Tkinter & module) |
@@ -52,13 +52,16 @@ Dự án sử dụng mô hình hồi quy logistic để dự đoán xem một ng
 | Dự đoán theo tiêu chí | Cho phép chọn `rating`, `time`, `latest_update` để lọc dự đoán |
 
 ---
-
+## Yêu cầu môi trường: Python 3.9+, Java 8
 ## ✅ Hướng dẫn cài đặt
 
 ```bash
 git clone https://github.com/ten-cua-ban/udemy-course-purchase-prediction.git
 cd udemy-course-purchase-prediction
 ```
+## Chạy chương trình
+* Kiểm tra trong thư mục gốc udemy-course-purchase-prediction có thư mục Models không, xoá đi nếu Models tồn tại
+* Chạy main.py 
 
 ## 📋 Phân công công việc & Hướng dẫn đóng góp
 
@@ -76,7 +79,7 @@ Dưới đây là mô tả chi tiết công việc cho từng nhánh chức năn
     * Viết code trong `src/data/load_data.py` để đọc file `Course_info.csv`.
     * Xử lý các giá trị bị thiếu (missing values).
     * Chuẩn hoá dữ liệu (normalization)
-    * **Gán nhãn (label):** Dựa vào các cột như `is_paid`, `price`, `avg_rating`, `num_subscribers` để tạo ra cột mục tiêu `will_purchase` (1 là mua, 0 là không mua).
+    * **Gán nhãn (label):** Dựa vào các cột như `is_paid`, `price`, `avg_rating`, `num_subscribers` để tạo ra cột mục tiêu `result` (1 là mua, 0 là không mua).
     * Lưu DataFrame đã làm sạch vào thư mục `data/processed/`.
 
 ---
@@ -87,7 +90,6 @@ Dưới đây là mô tả chi tiết công việc cho từng nhánh chức năn
     * Làm việc chính trong file `notebooks/eda.ipynb`.
     * Tính toán các thống kê mô tả (giá trung bình, số lượng bài giảng, v.v.).
     * **Vẽ biểu đồ:** Dùng Matplotlib/Seaborn để vẽ biểu đồ phân phối, biểu đồ tương quan để tìm ra các yếu tố ảnh hưởng đến quyết định mua hàng.
-    * Lưu các biểu đồ quan trọng vào thư mục `reports/figures/`.
 
 ---
 
