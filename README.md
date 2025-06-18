@@ -58,7 +58,6 @@ Dự án sử dụng mô hình hồi quy logistic để dự đoán xem một ng
 ```bash
 git clone https://github.com/ten-cua-ban/udemy-course-purchase-prediction.git
 cd udemy-course-purchase-prediction
-pip install -r requirements.txt
 ```
 
 ## 📋 Phân công công việc & Hướng dẫn đóng góp
