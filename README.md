@@ -12,12 +12,10 @@ Dự án sử dụng mô hình hồi quy logistic để dự đoán xem một ng
   - `src/data`: Load và xử lý dữ liệu
   - `src/features`: Tạo và chọn đặc trưng
   - `src/models`: Huấn luyện, dự đoán, đánh giá
-  - `src/utils`: Hàm tiện ích dùng chung
-- `models/`: Mô hình đã huấn luyện (.pkl)
-- `reports/`: Biểu đồ, hình ảnh và báo cáo
-- `requirements.txt`: Danh sách thư viện cần cài đặt
+- `models/`: Mô hình đã huấn luyện
+- `reports/`: báo cáo
 - `.gitignore`: Loại bỏ file không cần thiết
-- `README.md`: Giới thiệu và hướng dẫn dự án
+- `README.md`: Giới thiệu dự án
 
 ---
 
